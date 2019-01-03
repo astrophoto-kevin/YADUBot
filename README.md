@@ -120,10 +120,10 @@ If the comment text is saved in a file you can enter the filename here
 &nbsp;
 ## Setup
 You can download a little setup script here:
-https://github.com/astrophoto-kevin/YADUBot/blob/master/YADUBot_setup.sh
+https://raw.githubusercontent.com/astrophoto-kevin/YADUBot/master/YADUBot_setup.sh
 
 The script is for a freshly installed Ubuntu 18.04 LTS Server and can be downloaded with the following command.
-> wget https://github.com/astrophoto-kevin/YADUBot/blob/master/YADUBot_setup.sh
+> wget https://raw.githubusercontent.com/astrophoto-kevin/YADUBot/master/YADUBot_setup.sh
 
 You need to make the script executable.
 > sudo chmod +x YADUBot_setup.sh
