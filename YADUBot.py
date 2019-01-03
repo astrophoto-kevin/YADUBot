@@ -224,7 +224,7 @@ async def command(msg,text):
                         #---------------------------------------------------------------------------------------------------
                     elif BOT_COMMENT_IS_FILE == False:
                         BODY = BOT_COMMENT
-                    else
+                    else:
                         DO_NOTHING = "Just relaxing"
                     
                     
