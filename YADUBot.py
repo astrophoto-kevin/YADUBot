@@ -55,7 +55,7 @@ BOT_IS_COMMENTING = True                                                        
 BOT_IS_RESTEEMING = True                                                        # Enable / disable resteeming by the bot
 BOT_COMMENT_IS_FILE = True                                                      # Text of the comment is saved in a file
 BOT_COMMENT = ""                                                                # Text of the comment that is posted by the bot
-BOT_COMMENT_FILE = "astrosteem.comment"                                         # If the comment text is saved in a file you can enter the filename here
+BOT_COMMENT_FILE = "my.comment"                                                 # If the comment text is saved in a file you can enter the filename here
 
 #-----------------------------------------------------------------------------------------------------------------------
 
