@@ -44,8 +44,8 @@ echo "\e[32mDownloading the bot...\e[0m"
 sleep 5
 mkdir yadubot
 cd yadubot
-wget https://github.com/astrophoto-kevin/YADUBot/blob/master/YADUBot.py
-wget https://github.com/astrophoto-kevin/YADUBot/blob/master/start_bot.sh
+wget https://raw.githubusercontent.com/astrophoto-kevin/YADUBot/master/YADUBot.py
+wget https://raw.githubusercontent.com/astrophoto-kevin/YADUBot/master/start_bot.sh
 sudo chmod +x start_bot.sh
 
 # Setup finished
