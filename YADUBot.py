@@ -210,14 +210,26 @@ async def command(msg,text):
             #-----------------------------------------------------------------------------------------------------------
             if BOT_IS_COMMENTING == True:
                 try:
-                    COMMENT_PERMLINK = "astrosteem" + "".join(random.choices(string.digits, k=16))
+                    COMMENT_PERMLINK = "yadubot" + "".join(random.choices(string.digits, k=16))
                     POST_AUTHOR = '@' + post.split('/')[0]
+                    
+                    
+                    if BOT_COMMENT_IS_FILE == True:
+                        #---------------------------------------------------------------------------------------------------
+                        # Replace the &AUTHOR placeholder in the comment file with the name of the post author -------------
+                        #---------------------------------------------------------------------------------------------------
+                        with open(BOT_COMMENT_FILE, 'r') as myfile:
+                            BOT_COMMENT = myfile.read().replace('\n', '')
+                        BODY = BOT_COMMENT.replace("&AUTHOR", POST_AUTHOR)
+                        #---------------------------------------------------------------------------------------------------
+                    elif BOT_COMMENT_IS_FILE == False:
+                        BODY = BOT_COMMENT
+                    else
+                        DO_NOTHING = "Just relaxing"
+                    
+                    
 
-                    with open(BOT_COMMENT_FILE, 'r') as myfile:
-                        BOT_COMMENT = myfile.read().replace('\n', '')
-                    BODY = BOT_COMMENT.replace("&AUTHOR", POST_AUTHOR)
-
-                    steem.commit.post(title='', body=BODY, author=STEEM_USERNAME, permlink=COMMENT_PERMLINK,reply_identifier=p)
+                    steem.commit.post(title='', body=BODY, author=STEEM_USERNAME, permlink=COMMENT_PERMLINK,reply_identifier=post)
 
                     if LANGUAGE == "EN":
                         await discord.send_message(msg.channel, "Post successfully commented. :white_check_mark:")
