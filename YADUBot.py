@@ -2,7 +2,7 @@
 ########################################################################################################################
 # Copyright information ################################################################################################
 #
-# YADUBot is copyrighted under the MIT LICENSE and is created by astrophoto-kevin.
+# YADUBot is copyrighted under the MIT LICENSE and is created by astrophoto.kevin.
 # For more information see the license file at http://lizenz
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
