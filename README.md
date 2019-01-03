@@ -133,6 +133,16 @@ And start it with
 
 The script will try to download all the necessary files, system updates, prerequisites and try to install it. Some parts of the script are using "sudo" so you will be prompted to enter your password if it is needed.  
 
+**Please note, that the bot won't start if you have not set the correct discord and STEEM keys.**
+**You can set the setting in your favorite editor, e.g. for nano with typing:**
+
+> nano YADUBot.py
+
+After all settings are made the bot can be started with the start script.
+
+> ./start_bot.sh
+
+
 &nbsp;
 ### If you want it the manual way
 The following packages must be installed.
