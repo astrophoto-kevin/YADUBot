@@ -223,10 +223,7 @@ async def command(msg,text):
                         BODY = BOT_COMMENT.replace("&AUTHOR", POST_AUTHOR)
                         #---------------------------------------------------------------------------------------------------
                     elif BOT_COMMENT_IS_FILE == False:
-                        BODY = BOT_COMMENT
-                    else:
-                        DO_NOTHING = "Just relaxing"
-                    
+                        BODY = BOT_COMMENT               
                     
 
                     steem.commit.post(title='', body=BODY, author=STEEM_USERNAME, permlink=COMMENT_PERMLINK,reply_identifier=post)
