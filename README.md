@@ -132,7 +132,6 @@ And start it with
 > ./YADUBot_setup.sh
 
 The script will try to download all the necessary files, system updates, prerequisites and try to install it. Some parts of the script are using "sudo" so you will be prompted to enter your password if it is needed.  
-With the link that is shown in the prompt the bot can be added to your discord server. Copy this link and open it in a browser of your choice.
 
 &nbsp;
 ### If you want it the manual way
