@@ -3,7 +3,7 @@
 **YADUBot** is copyrighted under the MIT LICENSE and is created by **astrophoto.kevin**.
 For more information see the [LICENSE file](https://github.com/astrophoto-kevin/YADUBot/blob/master/LICENSE)!
 
-I needed a Discord bot for my **ASTRSteem** curation service which is looking for valuable astronomical and astrophotographical content on the STEEM blockchain.
+I needed a Discord bot for my **ASTROSteem** curation service which is looking for valuable astronomical and astrophotographical content on the STEEM blockchain.
 
 **YADUBot** is a bot that runs in a discord server. It can be used from every user on your discord server, that has the necessary privileges. This means that user management and permissions are made in discord. 
 It was made to meet the needs of **ASTROSteem**. However, it can easily be extended with your own functions. I have commented on the code to keep it as easy as possible.
