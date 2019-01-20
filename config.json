@@ -1,0 +1,24 @@
+{
+  "STEEM_ACCOUNTS": {
+    "MAIN_ACCOUNT": "",
+    "MAIN_POSTING_KEY": "",
+    "MAIN_VOTING_WEIGHT": 100,
+    "2ND_ACCOUNT": "",
+    "2ND_POSTING_KEY": "",
+    "2ND_VOTING_WEIGHT": 50
+  },
+  "DISCORD_SETTINGS": {
+    "BOT_NAME": "YADUBot",
+    "BOT_DESCRIPTION": "YADUBot",
+    "DISCORD_TOKEN": ""
+  },
+  "MAIN_SETTINGS": {
+    "LANGUAGE": "de",
+    "COMMAND_PREFIX": "$",
+    "BOT_IS_VOTING": true,
+    "BOT_IS_VOTING_2ND_ACCOUNT": true,
+    "BOT_IS_COMMENTING": true,
+    "BOT_COMMENT_FILE": "my.comment",
+    "BOT_IS_RESTEEMING": true
+  }
+}
