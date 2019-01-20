@@ -55,64 +55,62 @@ The bot then executes its upvote routine.
 &nbsp;
 ## Bot settings
 
-At the beginning of the Python script, the following settings can be made for the bot. The following examples are for the ASTROSteem bot and must be adapted to your own.
+To setup the bot, please open the config.json file with your favorite editor.
+The following examples are for the ASTROSteem bot and must be adapted to your own values.
 
-**BOT_NAME = "ASTROSteem-VotingBot"**  
-The name of your bot
+### STEEM_ACCOUNTS SETTINGS  
 
-**BOT_DESCRIPTION = "ASTROSteem-VotingBot"**   
-A short description
+**MAIN_ACCOUNT": "astrosteem"**  
+Username of your STEEM account. Without '@'  
 
-**COMMAND_PREFIX = "$"**  
-Chat prefix to mark a command
+**MAIN_POSTING_KEY": "SA325366OEGJSD44I6346436HGI36SEGHR7S7K7373O5DSHG"**  
+Private Posting Key of your STEEM account  
 
-**SHOW_INVITE_LINK = True**  
-Show the discord invite link in the command prompt when the bot is running
+**MAIN_VOTING_WEIGHT": 100**  
+Voting Power for the Upvote  
 
-**LANGUAGE = "DE"**  
-Language of the messages from the bot . Possible choice DE and EN
+**2ND_ACCOUNT": "astrophoto.kevin"**  
+Username of your the 2nd STEEM account. Without '@'  
 
-**DISCORD_TOKEN = "JDN23535H5W5LÖWJJ35325562FJWFH6463FH6W"**  
-Your Security token that was created from discord
+**2ND_POSTING_KEY": "SGJ235325OJHRJHGHD3663U4SGJ6H43664KFDJSGDHN"**  
+Private Posting Key of the 2nd STEEM account  
 
-**STEEM_USERNAME = "astrosteem"**  
-Username of your STEEM account. Without '@'
+**2ND_VOTING_WEIGHT": 50**  
+Voting Power for the 2nd upvote  
 
-**STEEM_POSTING_KEY = "SA325366OEGJSD44I6346436HGI36SEGHR7S7K7373O5DSHG"**  
-Private Posting Key of your STEEM account
+### DISCORD_SETTINGS  
 
-**STEEM_VOTING_WEIGHT = +100**  
-Voting Power for the Upvote
+**BOT_NAME": "ASTROSteem-VotingBot"**  
+The name of your bot  
 
-**STEEM_USERNAME_2ND = "astrophoto.kevin"**  
-Username of your the 2nd STEEM account. Without '@'
+**BOT_DESCRIPTION": "STROSteem-VotingBot"**  
+A short description  
 
-**STEEM_POSTING_KEY_2ND = "SGJ235325OJHRJHGHD3663U4SGJ6H43664KFDJSGDHN"**  
-Private Posting Key of the 2nd STEEM account
+**DISCORD_TOKEN": "JDN23535H5W5LÖWJJ35325562FJWFH6463FH6W"**  
+Your Security token that was created from discord  
 
-**STEEM_VOTING_WEIGHT_2ND = +50**  
-Voting Power for the 2nd upvote
+### MAIN_SETTINGS  
 
-**BOT_IS_VOTING = True**  
-Enable / disable upvotes
+**LANGUAGE": "de"**  
+Language of the messages from the bot . Possible choice de and en  
 
-**BOT_IS_VOTING_2ND_ACCOUNT = True**  
-Enable / disable upvote with a second STEEM account
+**COMMAND_PREFIX": "$"**  
+Chat prefix to mark a command  
 
-**BOT_IS_COMMENTING = True**  
-Enable / disable commenting by the bot
+**BOT_IS_VOTING": true**  
+Enable / disable upvotes  
 
-**BOT_IS_RESTEEMING = True**  
-Enable / disable resteeming by the bot
+**BOT_IS_VOTING_2ND_ACCOUNT": true**  
+Enable / disable upvote with a second STEEM account  
 
-**BOT_COMMENT_IS_FILE = True**  
-Text of the comment is saved in a file
+**BOT_IS_COMMENTING": true**  
+Enable / disable commenting by the bot  
 
-**BOT_COMMENT = ""**  
-Text of the comment that is posted by the bot
+**BOT_COMMENT_FILE": "my.comment"**  
+Name of the text file where the comment is saved  
 
-**BOT_COMMENT_FILE = "astrosteem.comment"**  
-If the comment text is saved in a file you can enter the filename here
+**BOT_IS_RESTEEMING": true**  
+Enable / disable resteeming by the bot  
 
 &nbsp;
 ### **Don't bother. The above keys are of course fictitious and will not work :-)**
@@ -136,7 +134,7 @@ The script will try to download all the necessary files, system updates, prerequ
 **Please note, that the bot won't start if you have not set the correct discord and STEEM keys.**
 **You can set the setting in your favorite editor, e.g. for nano with typing:**
 
-> nano YADUBot.py
+> nano config.json
 
 After all settings are made the bot can be started with the start script.
 
@@ -150,6 +148,7 @@ The following packages must be installed.
 - **Python 3.6**
 - **build-essential**
 - **libssl-dev**
+- **unzip**
 - **python-dev**
 - **python3-pip**
 
