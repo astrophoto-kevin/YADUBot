@@ -16,94 +16,97 @@
 ########################################################################################################################
 
 
-
-
-
 ########################################################################################################################
-# Loading dependecies of the bot #######################################################################################
+# Loading dependencies that are needed to run the code #################################################################
 ########################################################################################################################
 
 import asyncio
 import random
 import string
+import json
+import gettext
 from steem import Steem
 from discord.ext.commands import Bot
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 
-
 ########################################################################################################################
-# Settings of the bot ##################################################################################################
+# Loading config file and assigning variables ##########################################################################
 ########################################################################################################################
 
-BOT_NAME = ""                                                                   # The name of your bot
-BOT_DESCRIPTION = ""                                                            # A short description
-COMMAND_PREFIX = "$"                                                            # Chat prefix to mark a command
-SHOW_INVITE_LINK = True                                                         # Show the discord invite link in the command prompt when the bot is running
-LANGUAGE = "DE"                                                                 # Language of the messages from the bot . Possible choice DE and EN
-DISCORD_TOKEN = ""                                                              # Your Security token that was created from discord
-STEEM_USERNAME = ""                                                             # Username of your STEEM account. Without '@'
-STEEM_POSTING_KEY = ""                                                          # Private Posting Key of your STEEM account
-STEEM_VOTING_WEIGHT = +100                                                      # Voting Power for the Upvote
-STEEM_USERNAME_2ND = ""                                                         # Username of your the 2nd STEEM account. Without '@'
-STEEM_POSTING_KEY_2ND = ""                                                      # Private Posting Key of the 2nd STEEM account
-STEEM_VOTING_WEIGHT_2ND = +50                                                   # Voting Power for the 2nd upvote
-BOT_IS_VOTING = True                                                            # Enable / disable upvotes
-BOT_IS_VOTING_2ND_ACCOUNT = True                                                # Enable / disable upvote with a second STEEM account
-BOT_IS_COMMENTING = True                                                        # Enable / disable commenting by the bot
-BOT_IS_RESTEEMING = True                                                        # Enable / disable resteeming by the bot
-BOT_COMMENT_IS_FILE = True                                                      # Text of the comment is saved in a file
-BOT_COMMENT = ""                                                                # Text of the comment that is posted by the bot
-BOT_COMMENT_FILE = "my.comment"                                                 # If the comment text is saved in a file you can enter the filename here
+with open('config.json', 'r') as f:     # Open the config file "config.json" in the main directory
+    config = json.load(f)               # Load and parse the config file into the config variable
+
+    # Loading the variables that are stored in the config file into the variables that are used in the code
+    # All variables that are used to interact with STEEM
+    STEEM_USERNAME = config['STEEM_ACCOUNTS']['MAIN_ACCOUNT']
+    STEEM_POSTING_KEY = config['STEEM_ACCOUNTS']['MAIN_POSTING_KEY']
+    STEEM_VOTING_WEIGHT = config['STEEM_ACCOUNTS']['MAIN_VOTING_WEIGHT']
+    STEEM_USERNAME_2ND = config['STEEM_ACCOUNTS']['2ND_ACCOUNT']
+    STEEM_POSTING_KEY_2ND = config['STEEM_ACCOUNTS']['2ND_POSTING_KEY']
+    STEEM_VOTING_WEIGHT_2ND = config['STEEM_ACCOUNTS']['2ND_VOTING_WEIGHT']
+
+    # All variables that are used to interact with discord
+    BOT_NAME = config['DISCORD_SETTINGS']['BOT_NAME']
+    BOT_DESCRIPTION = config['DISCORD_SETTINGS']['BOT_DESCRIPTION']
+    DISCORD_TOKEN = config['DISCORD_SETTINGS']['DISCORD_TOKEN']
+
+    # All variables that are used to control the bot
+    LANGUAGE = config['MAIN_SETTINGS']['LANGUAGE']
+    COMMAND_PREFIX = config['MAIN_SETTINGS']['COMMAND_PREFIX']
+    BOT_IS_VOTING = config['MAIN_SETTINGS']['BOT_IS_VOTING']
+    BOT_IS_VOTING_2ND_ACCOUNT = config['MAIN_SETTINGS']['BOT_IS_VOTING_2ND_ACCOUNT']
+    BOT_IS_COMMENTING = config['MAIN_SETTINGS']['BOT_IS_COMMENTING']
+    BOT_COMMENT_FILE = config['MAIN_SETTINGS']['BOT_COMMENT_FILE']
+    BOT_IS_RESTEEMING = config['MAIN_SETTINGS']['BOT_IS_RESTEEMING']
+
+f.close()       # Close the config file
 
 #-----------------------------------------------------------------------------------------------------------------------
-
 
 
 ########################################################################################################################
 # Initialize the bot ###################################################################################################
 ########################################################################################################################
 
+# Load the language files with gettext and translate the strings
+language = gettext.translation('base', localedir='locales', languages=[LANGUAGE])   # Specify the files for gettext
+language.install()      # Translate into prior selected language
+
+# Define "discord" as discord bot
 discord = Bot(description=BOT_DESCRIPTION, command_prefix=COMMAND_PREFIX)
 
-steem = Steem(nodes=["https://api.steemit.com", "https://api.steem.house", "https://rpc.curiesteem.com"], keys=[STEEM_POSTING_KEY])
 
-if BOT_IS_VOTING_2ND_ACCOUNT == True:
-    steem2nd = Steem(nodes=["https://api.steemit.com", "https://api.steem.house", "https://rpc.curiesteem.com"], keys=[STEEM_POSTING_KEY_2ND])
-else:
-    DO_NOTHING = "Just relaxing"
+# Define "steem" as the connection to the STEEM blockchain
+steem = Steem(nodes=["https://api.steemit.com",
+                     "https://api.steem.house",
+                     "https://rpc.curiesteem.com"],
+              keys=[STEEM_POSTING_KEY])
 
-#-----------------------------------------------------------------------------------------------------------------------
-
-
-
-########################################################################################################################
-# Help and error messages ##############################################################################################
-########################################################################################################################
-
-HELP_MESSAGE_EN = str("Commands and their arguments:\n" + COMMAND_PREFIX + "hello\n" + COMMAND_PREFIX + "upvote\n" + COMMAND_PREFIX + "help\n")
-HELP_MESSAGE_DE = str("Befehle und ihre Argumente:\n" + COMMAND_PREFIX + "hello\n" + COMMAND_PREFIX + "upvote\n" + COMMAND_PREFIX + ".help\n")
-ERROR_MESSAGE_EN = str("The command doesn't exist or you have the wrong arguments.")
-ERROR_MESSAGE_DE = str("Der Befehl existiert nicht oder es wurden die falschen Argumente benutzt.")
+# Define "steem" as the connection to the STEEM blockchain, but only voting with a 2nd account is enabled
+if BOT_IS_VOTING_2ND_ACCOUNT is True:
+    steem2nd = Steem(nodes=["https://api.steemit.com",
+                            "https://api.steem.house",
+                            "https://rpc.curiesteem.com"],
+                     keys=[STEEM_POSTING_KEY_2ND])
+#else:
+#    pass # Do nothing if the vote with the 2nd account is disabled
 
 #-----------------------------------------------------------------------------------------------------------------------
-
 
 
 ########################################################################################################################
 # Checking discord for new messages ####################################################################################
 ########################################################################################################################
 
-@discord.event
-async def on_message(message):
+@discord.event      # On every event that is triggered by the discord API
+async def on_message(message):  # Run following code if the trigger was because of a new message
 
-    if message.content.startswith(
-            discord.command_prefix):
-        await command(message, message.content)
+    if message.content.startswith(discord.command_prefix):  # If the message starts with the command prefix run the
+        await command(message, message.content)             # "command" function and submit the content to the function
 
 #-----------------------------------------------------------------------------------------------------------------------
-
 
 
 ########################################################################################################################
@@ -112,6 +115,7 @@ async def on_message(message):
 
 async def command(msg,text):
 
+    # Load the message text into the text variable
     text = str(text)
     text = text[1:]
 
@@ -119,158 +123,162 @@ async def command(msg,text):
     # Command hallo ****************************************************************************************************
     #*******************************************************************************************************************
 
-    if text.lower().startswith('hello'):
-        if LANGUAGE == "EN":
-            await discord.send_message(msg.channel, "Hello Master, I'm awaiting your commands. :robot:")
-        elif LANGUAGE == "DE":
-            await discord.send_message(msg.channel, "Hallo Meister, ich warte auf deine Befehle. :robot:")
+    if text.lower().startswith('hello'):    # If the message starts with "hello", answer
+
+        # Send hello message
+        await discord.send_message(msg.channel, _("Hello Master, I'm awaiting your commands. :robot:"))
 
     #*******************************************************************************************************************
-
 
 
     #*******************************************************************************************************************
     # Command help *****************************************************************************************************
     #*******************************************************************************************************************
 
-    elif text.lower().startswith('help'):
-        if LANGUAGE == "EN":
-            await discord.send_message(msg.channel, HELP_MESSAGE_EN)
-        elif LANGUAGE == "DE":
-            await discord.send_message(msg.channel, HELP_MESSAGE_DE)
+    elif text.lower().startswith('help'):   # If the message starts with "help", answer with the help text.
+
+        # Send help message
+        help_message = await discord.send_message(msg.channel, _("Commands and their arguments:\n") \
+                + COMMAND_PREFIX + "hello\n"\
+                + COMMAND_PREFIX + "upvote <link to post>\n"\
+                + COMMAND_PREFIX + "help\n\n"\
+                + _("This message will be deleted after 10 seconds."))
+
+        await asyncio.sleep(10)                         # Wait 10 seconds
+        await discord.delete_message(help_message)      # and delete the message
 
     #*******************************************************************************************************************
-
 
 
     #*******************************************************************************************************************
     # Command upvote ***************************************************************************************************
     #*******************************************************************************************************************
 
-    elif text.lower().startswith('upvote'):
+    elif text.lower().startswith('upvote'): # If the message starts with "upvote", start the upvote routine.
         try:
-            link = text.split(' ')[1]
-            post = link.split('@')[1]
+            link = text.split(' ')[1]       # remove "upvote" from the string
+            post = link.split('@')[1]       # remove all the domain to get the permlink
 
-            if LANGUAGE == "EN":
-                await discord.send_message(msg.channel, "I'm trying to upvote this post.")
-                await discord.send_message(msg.channel, "Getting post information...")
-            elif LANGUAGE == "DE":
-                await discord.send_message(msg.channel, "Ich versuche diesen Post upzuvoten.")
-                await discord.send_message(msg.channel, "Hole Informationen über den Post...")
+            # Send messages to show that the upvote routine started
+            await discord.send_message(msg.channel, _("I'm trying to upvote this post."))   #
+            await discord.send_message(msg.channel, _("Getting post information..."))
+
 
             #-----------------------------------------------------------------------------------------------------------
             # Upvote the post ------------------------------------------------------------------------------------------
             #-----------------------------------------------------------------------------------------------------------
-            if BOT_IS_VOTING == True:
+            if BOT_IS_VOTING is True:
                 try:
+
+                    # Vote on the selected post with the main account
                     steem.commit.vote(post, STEEM_VOTING_WEIGHT, account=STEEM_USERNAME, )
-                    if LANGUAGE == "EN":
-                        await discord.send_message(msg.channel, "Post upvoted. :white_check_mark:")
-                    elif LANGUAGE == "DE":
-                        await discord.send_message(msg.channel, "Post wurde upgevoted. :white_check_mark:")
+
+                    # Send message that voting with the main accound was OK
+                    await discord.send_message(msg.channel, _("I have successfully upvoted this Post. :white_check_mark:"))
 
                 except:
-                    if LANGUAGE == "EN":
-                        await discord.send_message(msg.channel, "Error when upvoting the post! :x:")
-                    elif LANGUAGE == "DE":
-                        await discord.send_message(msg.channel, "Fehler beim upvoten des Posts! :x:")
+
+                    # Send message that voting with the main accound failed
+                    await discord.send_message(msg.channel, _("I was not able to upvote this post! :x:"))
 
             else:
-                DO_NOTHING = "Just relaxing"
+                pass
             #-----------------------------------------------------------------------------------------------------------
-
 
 
             #-----------------------------------------------------------------------------------------------------------
             # Upvote from 2nd account ----------------------------------------------------------------------------------
             #-----------------------------------------------------------------------------------------------------------
-            if BOT_IS_VOTING_2ND_ACCOUNT == True:
+            if BOT_IS_VOTING_2ND_ACCOUNT is True:
                 try:
+
+                    # Vote on the selected post with the second account
                     steem2nd.commit.vote(post, STEEM_VOTING_WEIGHT_2ND, account=STEEM_USERNAME_2ND, )
-                    if LANGUAGE == "EN":
-                        await discord.send_message(msg.channel, "Post upvoted with 2nd account. :white_check_mark:")
-                    elif LANGUAGE == "DE":
-                        await discord.send_message(msg.channel, "Post wurde mit 2. Account upgevoted. :white_check_mark:")
+
+                    # Send message that voting with the second accound was OK
+                    await discord.send_message(msg.channel, _("2nd Account: I have successfully upvoted this Post."
+                                                              " :white_check_mark:"))
 
                 except:
-                    if LANGUAGE == "EN":
-                        await discord.send_message(msg.channel, "2nd Account: Error when upvoting the post! :x:")
-                    elif LANGUAGE == "DE":
-                        await discord.send_message(msg.channel, "2. Account: Fehler beim upvoten des Posts! :x:")
+
+                    # Send message that voting with the second accound failed
+                    await discord.send_message(msg.channel, _("2nd Account: I was not able to upvote this post! :x:"))
 
             else:
-                DO_NOTHING = "Just relaxing"
+                pass
             #-----------------------------------------------------------------------------------------------------------
-
 
 
             #-----------------------------------------------------------------------------------------------------------
             # Comment the upvoted post ---------------------------------------------------------------------------------
             #-----------------------------------------------------------------------------------------------------------
-            if BOT_IS_COMMENTING == True:
+            if BOT_IS_COMMENTING is True:
                 try:
-                    COMMENT_PERMLINK = "yadubot" + "".join(random.choices(string.digits, k=16))
-                    POST_AUTHOR = '@' + post.split('/')[0]
+                    COMMENT_PERMLINK = "yadubot" + "".join(random.choices(string.digits, k=16)) # Generate a identifier
+                    POST_AUTHOR = '@' + post.split('/')[0]      # Extract the username out of the permlink
                     
                     
-                    if BOT_COMMENT_IS_FILE == True:
-                        #---------------------------------------------------------------------------------------------------
-                        # Replace the &AUTHOR placeholder in the comment file with the name of the post author -------------
-                        #---------------------------------------------------------------------------------------------------
-                        with open(BOT_COMMENT_FILE, 'r') as myfile:
-                            BOT_COMMENT = myfile.read().replace('\n', '')
-                        BODY = BOT_COMMENT.replace("&AUTHOR", POST_AUTHOR)
-                        #---------------------------------------------------------------------------------------------------
-                    elif BOT_COMMENT_IS_FILE == False:
-                        BODY = BOT_COMMENT               
-                    
+                    #---------------------------------------------------------------------------------------------------
+                    # Replace the &AUTHOR placeholder in the comment file with the name of the post author -------------
+                    #---------------------------------------------------------------------------------------------------
+                    with open(BOT_COMMENT_FILE, 'r') as myfile:             # Open the comment file
+                        BOT_COMMENT = myfile.read().replace('\n', '')       # Remove line feeds
+                        BODY = BOT_COMMENT.replace("&AUTHOR", POST_AUTHOR)  # Replace "&AUTHOR" with the name of the author
+                    #---------------------------------------------------------------------------------------------------
 
-                    steem.commit.post(title='', body=BODY, author=STEEM_USERNAME, permlink=COMMENT_PERMLINK,reply_identifier=post)
+                    # Comment on the post with the previous loaded text
+                    steem.commit.post(title='', body=BODY, author=STEEM_USERNAME, permlink=COMMENT_PERMLINK,
+                                      reply_identifier=post)
 
-                    if LANGUAGE == "EN":
-                        await discord.send_message(msg.channel, "Post successfully commented. :white_check_mark:")
-                    elif LANGUAGE == "DE":
-                        await discord.send_message(msg.channel, "Post erfolgreich kommentiert. :white_check_mark:")
+                    # Send message that commenting the post was OK
+                    await discord.send_message(msg.channel, _("I have successfully placed my comment on this Post."
+                                                              " :white_check_mark:"))
 
                 except:
-                    if LANGUAGE == "EN":
-                        await discord.send_message(msg.channel, "Error commenting the post! :x:")
-                    elif LANGUAGE == "DE":
-                        await discord.send_message(msg.channel, "Fehler beim kommentieren des Posts! :x:")
+
+                    # Send message that commenting the post failed
+                    await discord.send_message(msg.channel, _("I was not able to comment on this post! :x:"))
 
             else:
-                DO_NOTHING = "Just relaxing"
+                pass
 
             #-----------------------------------------------------------------------------------------------------------
-
 
 
             #-----------------------------------------------------------------------------------------------------------
             # Resteem the upvoted post ---------------------------------------------------------------------------------
             #-----------------------------------------------------------------------------------------------------------
-            if BOT_IS_RESTEEMING == True:
+            if BOT_IS_RESTEEMING is True:
                 try:
+
+                    # Resteem the post
                     steem.commit.resteem(post, account=STEEM_USERNAME)
 
-                    if LANGUAGE == "EN":
-                        await discord.send_message(msg.channel, "Post successfully resteemed. :white_check_mark:")
-                    elif LANGUAGE == "DE":
-                        await discord.send_message(msg.channel, "Post erfolgreich resteemed. :white_check_mark:")
+                    # Send message that the resteem was OK
+                    await discord.send_message(msg.channel, _("I have successfully resteemed this Post."
+                                                              " :white_check_mark:"))
 
                 except:
-                    if LANGUAGE == "EN":
-                        await discord.send_message(msg.channel, "Error resteeming the post!")
-                    elif LANGUAGE == "DE":
-                        await discord.send_message(msg.channel, "Fehler beim resteemen des Posts!")
+
+                    # Send message that the resteem was failed
+                    await discord.send_message(msg.channel, _("I was not able to resteem this post! :x:"))
 
             else:
-                DO_NOTHING = "Just relaxing"
+                pass
+
+            #-----------------------------------------------------------------------------------------------------------
+
+
+            #-----------------------------------------------------------------------------------------------------------
+            # Message that the bot has done its work -------------------------------------------------------------------
+            #-----------------------------------------------------------------------------------------------------------
+
+            await discord.send_message(msg.channel, _("I've been working through all the tasks."
+                                                          " :white_check_mark:"))
 
             #-----------------------------------------------------------------------------------------------------------
 
     #*******************************************************************************************************************
-
 
 
     #*******************************************************************************************************************
@@ -278,65 +286,53 @@ async def command(msg,text):
     #*******************************************************************************************************************
 
         except IndexError:
-            if LANGUAGE == "EN":
-                index_error = await discord.send_message(msg.channel, ERROR_MESSAGE_EN)
-            elif LANGUAGE == "DE":
-                index_error = await discord.send_message(msg.channel, ERROR_MESSAGE_DE)
-            else:
-                index_error = ""
 
-            await asyncio.sleep(10)
-            await discord.delete_message(index_error)
+            # Send message that there was an error in the argument
+            index_error = await discord.send_message(msg.channel, _("The used argument is wrong or doesn't exist.\nUse ") \
+                                                     + COMMAND_PREFIX + _("help to see how arguments are used.\n\n") \
+                                                     + _("This message will be deleted after 10 seconds."))
+
+            await asyncio.sleep(10)                     # Wait 10 seconds
+            await discord.delete_message(index_error)   # and delete the message
 
             return 0
 
     else:
-        if LANGUAGE == "EN":
-            command_error = await discord.send_message(msg.channel, ERROR_MESSAGE_EN)
-        elif LANGUAGE == "DE":
-            command_error = await discord.send_message(msg.channel, ERROR_MESSAGE_DE)
-        else:
-            command_error = ""
 
-        await asyncio.sleep(10)
-        await discord.delete_message(command_error)
+        # Send message that there was an error in the command
+        command_error = await discord.send_message(msg.channel, _("This command doesn't exist.\nUse ") \
+                                                   + COMMAND_PREFIX + _("help to see the available commands.\n\n") \
+                                                   + _("This message will be deleted after 10 seconds."))
+
+        await asyncio.sleep(10)                         # Wait 10 seconds
+        await discord.delete_message(command_error)     # and delete the message
 
     #*******************************************************************************************************************
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 
-
 ########################################################################################################################
 # Starting the bot and writing some lines to the prompt ################################################################
 ########################################################################################################################
 
-@discord.event
-async def on_ready():
-    if LANGUAGE == "EN":
-        print("")
-        print("")
-        print("#############################################################################################################")
-        print("")
-        print("Bot is running and waiting for your instructions.")
-        print("Type " + COMMAND_PREFIX + "hello to test it. Type " + COMMAND_PREFIX + "help to see the available commands.")
-        print("")
-        print("Link to connect to discord: https://discordapp.com/oauth2/authorize?discord_id=" + discord.user.id + "&scope=bot&permissions=8")
-        print("")
-        print("#############################################################################################################")
-    elif LANGUAGE == "DE":
-        print("")
-        print("")
-        print("#############################################################################################################")
-        print("")
-        print("Der Bot ist bereit und wartet auf Instruktionen.")
-        print("Tippe " + COMMAND_PREFIX + "hello um ihn zu testen. Tippe " + COMMAND_PREFIX + "help um die verfügbaren Kommandos zu sehen.")
-        print("")
-        print("Link um mit discord zu verbinden: https://discordapp.com/oauth2/authorize?discord_id=" + discord.user.id + "&scope=bot&permissions=8")
-        print("")
-        print("#############################################################################################################")
+@discord.event      # On every event that is triggered by the discord API
+async def on_ready():       # Run following code if the trigger was because the discord client is ready
 
+    # Write a little help tho the shell and show the link to connect the bot to the discord server
+    print("")
+    print("")
+    print("###########################################################################################################")
+    print("")
+    print(_("Bot is running and waiting for your instructions."))
+    print(_("Type ") + COMMAND_PREFIX + _("hello to test it. Type ") + COMMAND_PREFIX + _("help to see the available commands."))
+    print("")
+    print("https://discordapp.com/oauth2/authorize?discord_id=" + discord.user.id + "&scope=bot&permissions=8")
+    print(_("Copy this link to a browser of your choise and connect the bot to your discord server."))
+    print("")
+    print("###########################################################################################################")
 
-discord.run(DISCORD_TOKEN)
+    # If everything is loaded up and ready, start the bot/client
+    discord.run(DISCORD_TOKEN)
 
 #-----------------------------------------------------------------------------------------------------------------------
