@@ -43,10 +43,9 @@ echo "\e[39m \e[0m"
 echo "\e[39m \e[0m"
 echo "\e[32mDownloading the bot...\e[0m"
 sleep 5
-wget https://raw.githubusercontent.com/astrophoto-kevin/YADUBot/master/YADUBot.py
-wget https://raw.githubusercontent.com/astrophoto-kevin/YADUBot/master/my.comment
-wget https://raw.githubusercontent.com/astrophoto-kevin/YADUBot/master/start_bot.sh
-sudo chmod +x start_bot.sh
+wget https://raw.githubusercontent.com/astrophoto-kevin/YADUBot/master/YADUBot.zip
+unzip YADUBot.zip
+chmod +x start_bot.sh
 
 # Setup finished
 echo "\e[39m \e[0m"
